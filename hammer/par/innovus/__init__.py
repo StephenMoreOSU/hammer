@@ -211,7 +211,8 @@ class Innovus(HammerPlaceAndRouteTool, CadenceTool):
             self.clock_tree,
             self.add_fillers,
             self.route_design,
-            self.opt_design
+            self.opt_design,
+            self.gen_reports,
         ]
         write_design_step = [
             self.write_regs,
@@ -608,6 +609,16 @@ class Innovus(HammerPlaceAndRouteTool, CadenceTool):
             self.verbose_append("unflatten_ilm")
         return True
 
+    def gen_reports(self) -> bool:
+        """
+            Generate Power, Timing, Area reports for PAR stage of the flow
+        """
+        self.append("mkdir -p reports")
+        self.append("report_timing > reports/timing.rpt")
+        self.append("report_power > reports/power.rpt")
+        self.append("report_area -detail > reports/area_detailed.rpt")
+        self.append("report_area > reports/area.rpt")
+        return True
     def assemble_design(self) -> bool:
         # TODO: implement the assemble_design step.
         return True

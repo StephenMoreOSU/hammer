@@ -210,6 +210,12 @@ class Genus(HammerSynthesisTool, CadenceTool):
         self.write_contents_to_path(self.generate_mmmc_script(), mmmc_path)
         verbose_append("read_mmmc {mmmc_path}".format(mmmc_path=mmmc_path))
 
+        # Add search paths for includes and define header files 
+        # These may not be able to be included by passing into the input files as they could have non synthesizable code!
+        if self.get_hdl_search_paths():
+            hdl_search_str = f'{{ {" ".join(self.get_hdl_search_paths())} }}'
+            verbose_append(f"set_db init_hdl_search {hdl_search_str}")
+
         if self.hierarchical_mode.is_nonleaf_hierarchical():
             # Read ILMs.
             for ilm in self.get_input_ilms():
@@ -228,8 +234,8 @@ class Genus(HammerSynthesisTool, CadenceTool):
             files=" ".join(lef_files)
         ))
 
-        # Load input files and check that they are all Verilog.
-        if not self.check_input_files([".v", ".sv"]):
+        # Load input files and check that they are all Verilog or VHDL
+        if not self.check_input_files([".v", ".sv", ".vhdl", ".vhd"]):
             return False
         # We are switching working directories and Genus still needs to find paths.
         abspath_input_files = list(map(lambda name: os.path.join(os.getcwd(), name), self.input_files))  # type: List[str]
@@ -244,8 +250,20 @@ class Genus(HammerSynthesisTool, CadenceTool):
             hammer_tech.filters.verilog_synth_filter
         ], hammer_tech.HammerTechnologyUtils.to_plain_item)
 
+        verilog_input_files = list(filter(lambda name: (name.endswith(".v") or name.endswith(".sv")), abspath_input_files))
+        vhdl_input_files = list(filter(lambda name: (name.endswith(".vhd") or name.endswith(".vhdl")), abspath_input_files))
+
         # Read the RTL.
-        verbose_append("read_hdl -sv {{ {} }}".format(" ".join(abspath_input_files)))
+        if len(verilog_input_files) > 0:
+            verbose_append("read_hdl -sv {{ {} }}".format(" ".join(verilog_input_files)))
+        
+        if len(vhdl_input_files) > 0:
+            verbose_append("read_hdl -vhdl {{ {} }}".format(" ".join(vhdl_input_files)))
+
+
+        if len(verilog_input_files) == 0 and len(vhdl_input_files) == 0:
+            self.logger.error("Genus Synthesis: No input files found!")
+            return False
 
         # Elaborate/parse the RTL.
         verbose_append("elaborate {}".format(self.top_module))

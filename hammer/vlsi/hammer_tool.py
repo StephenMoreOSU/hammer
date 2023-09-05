@@ -1538,6 +1538,13 @@ class HammerTool(metaclass=ABCMeta):
         # TODO how does python cache this? Do we need to avoid re-processing this every time?
         return self.technology.get_stackup_by_name(self.get_setting("technology.core.stackup"))
 
+    def get_hdl_search_paths(self) -> List[str]:
+        """
+        Get a list of hdl directories to search in when performing Synthesis (this could be used for: includes, defines, etc)
+        """
+        hdl_search_paths = self.get_setting("synthesis.inputs.hdl_search_paths")
+        return(hdl_search_paths)
+
     def get_input_ilms(self, full_tree=False) -> List[ILMStruct]:
         """
         Get a list of input ILM modules for hierarchical mode.

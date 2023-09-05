@@ -85,7 +85,7 @@ class HammerDriver:
             if not os.path.exists(config):
                 self.log.error("Environment config %s does not exist!" % (config))
             config_str = Path(config).read_text()
-            is_yaml = config.endswith(".yml")
+            is_yaml = config.endswith(".yml") or config.endswith(".yaml")
             self.database.update_environment([hammer_config.load_config_from_string(config_str, is_yaml, str(Path(config).resolve().parent))])
 
         # Read in the project config to find the syn, par, and tech.
@@ -94,7 +94,7 @@ class HammerDriver:
             if not os.path.exists(config):
                 self.log.error("Project config %s does not exist!" % (config))
             config_str = Path(config).read_text()
-            is_yaml = config.endswith(".yml")
+            is_yaml = config.endswith(".yml") or config.endswith(".yaml")
             project_configs.append(hammer_config.load_config_from_string(config_str, is_yaml, str(Path(config).resolve().parent)))
         project_configs.append(extra_project_config)
         self.project_configs = []  # type: List[dict]

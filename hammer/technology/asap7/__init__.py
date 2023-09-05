@@ -204,7 +204,7 @@ def asap7_innovus_settings(ht: HammerTool) -> bool:
 set_db timing_analysis_async_checks no_async
 
 # Via preferences for stripes
-set_db generate_special_via_rule_preference { M7_M6widePWR1p152 M6_M5widePWR1p152 M5_M4widePWR0p864 M4_M3widePWR0p864 M3_M2widePWR0p936 }
+set_db generate_special_via_rule_preference { M9_M8widePWR1p152 M8_M7widePWR1p152 M7_M6widePWR1p152 M6_M5widePWR1p152 M5_M4widePWR0p864 M4_M3widePWR0p864 M3_M2widePWR0p936 }
 
 # Prevent extending M1 pins in cells
 set_db route_design_with_via_in_pin true
