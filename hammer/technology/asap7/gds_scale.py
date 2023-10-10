@@ -11,14 +11,14 @@ def main():
     gds_file = sys.argv[2]
 
     try:
-        # Prioritize gdstk
-        gds_tool = __import__('gdstk')
+        # Prioritize gdspy (This was changed from original code, gdstk seems to error out on cell.filter function call )
+        gds_tool = __import__('gdspy')
     except ImportError:
         try:
-            print("gdstk not found, falling back to gdspy...")
-            gds_tool = __import__('gdspy')
+            print("gdspy not found, falling back to gdspy...")
+            gds_tool = __import__('gdstk')
         except ImportError:
-            print('Check your gdspy installation!')
+            print('Check your gdstk installation!')
             sys.exit()
 
     print('Scaling down {gds} using {tool}...'.format(gds=gds_file, tool=gds_tool.__name__))
