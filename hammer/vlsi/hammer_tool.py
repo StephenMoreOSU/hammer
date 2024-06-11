@@ -1542,7 +1542,14 @@ class HammerTool(metaclass=ABCMeta):
         """
         Get a list of hdl directories to search in when performing Synthesis (this could be used for: includes, defines, etc)
         """
+        
         hdl_search_paths = self.get_setting("synthesis.inputs.hdl_search_paths")
+        if isinstance(hdl_search_paths, str):
+            hdl_search_paths = [hdl_search_paths]
+        elif not isinstance(hdl_search_paths, list):
+            self.logger.error("hdl_search_paths must be a string or a list of strings")
+            hdl_search_paths = []
+
         return(hdl_search_paths)
 
     def get_input_ilms(self, full_tree=False) -> List[ILMStruct]:

@@ -15,7 +15,7 @@ def main():
         gds_tool = __import__('gdspy')
     except ImportError:
         try:
-            print("gdspy not found, falling back to gdspy...")
+            print("gdspy not found, falling back to gdstk...")
             gds_tool = __import__('gdstk')
         except ImportError:
             print('Check your gdstk installation!')
@@ -29,14 +29,19 @@ def main():
     if gds_tool.__name__ == 'gdstk':
         # load original_gds
         gds_lib = gds_tool.read_gds(infile=gds_file)
+        # Non STDCELL cells
+        non_stdcells = list(filter(lambda c: c.name not in cell_list, gds_lib.cells))
         # Iterate through cells that aren't part of standard cell library and scale
-        for cell in list(filter(lambda c: c.name not in cell_list, gds_lib.cells)):
+        for cell in non_stdcells:
             print('Scaling down ' + cell.name)
-
             # Need to remove 'blk' layer from any macros, else LVS rule deck interprets it as a polygon
             # This has a layer datatype of 4
             # Then scale down the polygon
-            cell.filter(layers=[], types=[4], operation='or')
+            non_stdcell_pgs_uniq_layers = set([pg.layer for pg in cell.polygons])
+            blk_layer_dtype = 4
+            for layer in non_stdcell_pgs_uniq_layers:
+                # For all polygon layers that exist in all cells, filter out the polygons with datatype 4
+                cell.filter(spec=[(layer, blk_layer_dtype)], remove=True)
             for poly in cell.polygons:
                 poly.scale(0.25)
 
