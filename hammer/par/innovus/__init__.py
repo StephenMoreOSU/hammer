@@ -618,6 +618,7 @@ class Innovus(HammerPlaceAndRouteTool, CadenceTool):
         self.append("report_power > reports/power.rpt")
         self.append("report_area -detail > reports/area_detailed.rpt")
         self.append("report_area > reports/area.rpt")
+        self.append("time_design -post_route -path_report -drv_report -slack_report -num_paths 100 -report_dir timingReports")
         return True
     def assemble_design(self) -> bool:
         # TODO: implement the assemble_design step.
